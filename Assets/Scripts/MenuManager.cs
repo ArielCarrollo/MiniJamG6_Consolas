@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI; 
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
@@ -10,8 +11,7 @@ public class MenuManager : MonoBehaviour
     public GameObject panelSeleccionActo;
 
     [Header("UI Selección de Acto")]
-    public Text textoActoSeleccionado; 
-
+    public TMP_Text textoActoSeleccionado;
     private List<string> actos = new List<string>
     {
         "Acto1_Habitacion",
@@ -27,6 +27,7 @@ public class MenuManager : MonoBehaviour
     {
         panelMenuPrincipal.SetActive(true);
         panelSeleccionActo.SetActive(false);
+        textoActoSeleccionado = GetComponent<TMP_Text>();
         ActualizarUITextoActo(); 
     }
 
