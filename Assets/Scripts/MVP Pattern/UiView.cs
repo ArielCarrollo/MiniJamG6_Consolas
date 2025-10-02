@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro; // Asegúrate de tener TextMeshPro importado
 using System.Collections;
+using UnityEngine.UI;
 
 public class UIView : MonoBehaviour
 {
@@ -13,6 +14,11 @@ public class UIView : MonoBehaviour
     public CanvasGroup panelInicial; // NUEVO: Para el fondo negro y texto inicial
     public CanvasGroup panelFadeTransicion; // ANTES: panelFade. Renombrado para claridad.
 
+    [Header("Barra de Coraje")]
+    public Slider sliderCoraje;
+    [Header("Paneles Específicos")]
+    public GameObject panelDiario;
+
     void Start()
     {
         // Asegurarse de que todo empieza en el estado correcto
@@ -22,11 +28,13 @@ public class UIView : MonoBehaviour
         if (panelFadeTransicion) panelFadeTransicion.alpha = 0;
         // El panel inicial empieza visible
         if (panelInicial) panelInicial.alpha = 1;
+        if (panelDiario != null) panelDiario.SetActive(false);
     }
 
-    public void MostrarPensamiento(string texto)
+    public void MostrarPensamiento(string texto, float opacidad)
     {
         textoPensamientos.text = texto;
+        textoPensamientos.color = new Color(textoPensamientos.color.r, textoPensamientos.color.g, textoPensamientos.color.b, opacidad);
     }
 
     public void LimpiarPensamiento()
@@ -43,6 +51,26 @@ public class UIView : MonoBehaviour
     {
         textoPrompt.text = "";
     }
+    public void ActualizarBarraCoraje(float valor)
+    {
+        if (sliderCoraje != null)
+        {
+            // El valor del slider va de 0 a 1, justo como nuestro Coraje.
+            sliderCoraje.value = valor;
+        }
+    }
+    public void MostrarPanelDiario(bool mostrar)
+    {
+        if (panelDiario != null)
+        {
+            panelDiario.SetActive(mostrar);
+        }
+    }
+
+
+
+
+
 
     // --- LÓGICA DE SECUENCIA INICIAL (NUEVA) ---
 

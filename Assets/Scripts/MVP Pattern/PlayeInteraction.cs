@@ -1,89 +1,68 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // Puedes mantenerlo o quitarlo, ya no es estrictamente necesario aquí.
 
 public class PlayerInteraction : MonoBehaviour
 {
     [Header("Referencias")]
-    public UIView view; // Referencia a la Vista para mostrar/ocultar prompts
+    public UIView view;
 
     [Header("Configuración de Interacción")]
     public float distanciaInteraccion = 3f;
-    [Tooltip("El radio de la esfera para detectar objetos. Aumenta esto para que sea más fácil apuntar.")]
     public float radioEsfera = 0.5f;
     public LayerMask capaInteraccion;
 
     private Camera cam;
-    private InteractableObject objetoDetectado;
+    private InteractableObject objetoDetectado; // Cambiado de 'objetoDetectadoAnterior' a 'objetoDetectado' para mayor claridad
 
-    // Almacenamos el último hit para dibujarlo con Gizmos
     private RaycastHit lastHit;
     private bool hasHit;
-
-    // --- ELIMINADO ---
-    // public InputActionAsset actions;
-    // private InputAction interactAction;
 
     private void Awake()
     {
         cam = GetComponent<Camera>();
-        // --- ELIMINADO ---
-        // interactAction = actions.FindActionMap("Player").FindAction("Interact");
     }
 
-    // --- MODIFICADO: Ahora nos suscribimos al evento del InputReader ---
-    private void OnEnable()
-    {
-        InputReader.OnInteract += Interactuar; // AÑADIDO
-        // interactAction.Enable(); // ELIMINADO
-    }
-
-    // --- MODIFICADO: Nos desuscribimos para evitar errores ---
-    private void OnDisable()
-    {
-        InputReader.OnInteract -= Interactuar; // AÑADIDO
-        // interactAction.Disable(); // ELIMINADO
-    }
-
-    // --- ELIMINADO ---
-    // private void Start() => interactAction.performed += _ => Interactuar();
+    private void OnEnable() => InputReader.OnInteract += Interactuar;
+    private void OnDisable() => InputReader.OnInteract -= Interactuar;
 
     void Update()
     {
-        // Esta lógica de SphereCast ya funciona bien y no necesita cambios.
-        hasHit = Physics.SphereCast(
-            cam.transform.position,
-            radioEsfera,
-            cam.transform.forward,
-            out lastHit,
-            distanciaInteraccion,
-            capaInteraccion
-        );
+        hasHit = Physics.SphereCast(cam.transform.position, radioEsfera, cam.transform.forward, out lastHit, distanciaInteraccion, capaInteraccion);
 
+        InteractableObject interactableActual = null;
         if (hasHit)
         {
-            var interactable = lastHit.collider.GetComponent<InteractableObject>();
-            if (interactable != null)
-            {
-                if (objetoDetectado != interactable)
-                {
-                    objetoDetectado = interactable;
-                    view.MostrarPensamiento(objetoDetectado.textoAlMirar);
-                    view.MostrarPrompt(objetoDetectado.textoDelPrompt);
-                }
-                return;
-            }
+            interactableActual = lastHit.collider.GetComponent<InteractableObject>();
         }
 
-        if (objetoDetectado != null)
+        // --- LÓGICA DE DETECCIÓN MEJORADA ---
+        if (interactableActual != objetoDetectado)
         {
-            view.OcultarPrompt();
-            view.MostrarPensamiento(GamePresenter.Instance.textoPistaEscena);
-            objetoDetectado = null;
+            // Dejamos de mirar el objeto anterior
+            if (objetoDetectado != null)
+            {
+                view.OcultarPrompt(); // Ocultamos el prompt del objeto anterior
+                objetoDetectado.onGazeExit.Invoke();
+            }
+
+            // Actualizamos el objeto que estamos mirando
+            objetoDetectado = interactableActual;
+
+            // Empezamos a mirar el nuevo objeto
+            if (objetoDetectado != null)
+            {
+                // Mostramos el texto y el prompt del nuevo objeto
+                view.MostrarPensamiento(objetoDetectado.textoAlMirar, 1f);
+                view.MostrarPrompt(objetoDetectado.textoDelPrompt);
+                objetoDetectado.onGazeEnter.Invoke();
+            }
+            else
+            {
+                // Si no miramos nada interactuable, mostramos el texto por defecto de la escena
+                view.MostrarPensamiento(GamePresenter.Instance.textoPistaEscena, 1f);
+            }
         }
     }
 
-    // El método Interactuar ahora es llamado por el evento de InputReader.
-    // No necesita cambios internos.
     private void Interactuar()
     {
         if (objetoDetectado != null)
@@ -97,7 +76,6 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (cam == null) cam = GetComponent<Camera>();
         if (cam == null) return;
-
         Gizmos.color = hasHit ? Color.green : Color.red;
 
         if (hasHit)

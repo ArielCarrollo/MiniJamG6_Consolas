@@ -1,13 +1,29 @@
 using UnityEngine;
-using UnityEngine.Events; // Necesario para UnityEvent
+using UnityEngine.Events;
 
+[RequireComponent(typeof(ShimmerEffect))] // Asegura que siempre tenga el efecto
 public class InteractableObject : MonoBehaviour
 {
+    [Header("Referencias")]
+    public ShimmerEffect shimmerEffect; // Referencia a su propio efecto de brillo
+
     [Header("Textos de Interacción")]
     [TextArea(3, 5)]
     public string textoAlMirar;
     public string textoDelPrompt;
 
-    [Header("Evento")]
-    public UnityEvent onInteract; // ¡La magia de la reusabilidad está aquí!
+    [Header("Lógica de Misión (Opcional)")]
+    public bool esObjetoDeMision = false;
+    public string idDeMision;
+
+    [Header("Eventos")]
+    public UnityEvent onInteract;
+    public UnityEvent onGazeEnter;
+    public UnityEvent onGazeExit;
+
+    private void Awake()
+    {
+        // Asigna la referencia automáticamente al iniciar
+        shimmerEffect = GetComponent<ShimmerEffect>();
+    }
 }
