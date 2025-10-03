@@ -26,47 +26,41 @@ public class PlayerInteraction : MonoBehaviour
 
     void Update()
     {
-        hasHit = Physics.SphereCast(cam.transform.position, radioEsfera, cam.transform.forward, out lastHit, distanciaInteraccion, capaInteraccion);
+        RaycastHit hit;
+        bool hasHit = Physics.SphereCast(cam.transform.position, radioEsfera, cam.transform.forward, out hit, distanciaInteraccion, capaInteraccion);
 
-        InteractableObject interactableActual = null;
-        if (hasHit)
-        {
-            interactableActual = lastHit.collider.GetComponent<InteractableObject>();
-        }
+        InteractableObject interactableActual = hasHit ? hit.collider.GetComponent<InteractableObject>() : null;
 
-        // --- LÓGICA DE DETECCIÓN MEJORADA ---
         if (interactableActual != objetoDetectado)
         {
-            // Dejamos de mirar el objeto anterior
+            // Notificamos al GamePresenter que hemos dejado de mirar el objeto anterior
             if (objetoDetectado != null)
             {
-                view.OcultarPrompt(); // Ocultamos el prompt del objeto anterior
-                objetoDetectado.onGazeExit.Invoke();
+                GamePresenter.Instance.OnGazeExitInteractable(objetoDetectado);
             }
 
-            // Actualizamos el objeto que estamos mirando
             objetoDetectado = interactableActual;
 
-            // Empezamos a mirar el nuevo objeto
+            // Notificamos al GamePresenter que estamos mirando un nuevo objeto
             if (objetoDetectado != null)
             {
-                // Mostramos el texto y el prompt del nuevo objeto
-                view.MostrarPensamiento(objetoDetectado.textoAlMirar, 1f);
-                view.MostrarPrompt(objetoDetectado.textoDelPrompt);
-                objetoDetectado.onGazeEnter.Invoke();
-            }
-            else
-            {
-                // Si no miramos nada interactuable, mostramos el texto por defecto de la escena
-                view.MostrarPensamiento(GamePresenter.Instance.textoPistaEscena, 1f);
+                GamePresenter.Instance.OnGazeEnterInteractable(objetoDetectado);
             }
         }
     }
-
     private void Interactuar()
     {
-        if (objetoDetectado != null)
+
+        // 1. Preguntamos al Presenter si hay un panel abierto.
+        if (GamePresenter.Instance.IsUIPanelOpen())
         {
+            // Si lo hay, nuestra única acción es cerrarlo.
+            GamePresenter.Instance.Evento_CerrarDiario();
+        }
+        // 2. Si no hay ningún panel abierto...
+        else if (objetoDetectado != null)
+        {
+            // ...procedemos con la interacción normal del objeto que estamos mirando.
             Debug.Log("Interactuando con " + objetoDetectado.name);
             objetoDetectado.onInteract.Invoke();
         }

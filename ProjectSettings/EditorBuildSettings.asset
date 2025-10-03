@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Acto2_EstacionRutina.unity
     guid: dced89502b5af9b4ba4ee3e0ed9b2558
   - enabled: 1
-    path: Assets/Scenes/Acto4_EstacionEncuentro.unity
+    path: Assets/Scenes/Acto4_EstacionEncuentro1.unity
     guid: 3fb932adc23fa3f47a8a2899338e6f8d
   - enabled: 1
     path: Assets/Scenes/Acto3_VagonRutina.unity
@@ -23,6 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Acto5_VagonFinal.unity
     guid: f46daf120ecbc65488eda9c3477b2927
+  - enabled: 1
+    path: Assets/Scenes/Acto4_EstacionEncuentro.unity
+    guid: 4fe66f885debb9c488641a6133932fef
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

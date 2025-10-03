@@ -1,26 +1,18 @@
 using UnityEngine;
-using System.Collections;
+using DG.Tweening; // ¡Importante! Añadir el namespace de DOTween
 
 public class ShimmerEffect : MonoBehaviour
 {
-    private Renderer objectRenderer;
-    private Material materialInstance;
-    private Color baseEmissionColor = Color.black;
-
     [Header("Configuración del Brillo")]
-    [Tooltip("El color del resplandor.")]
-    [ColorUsage(true, true)] // Permite usar HDR para colores más intensos
-    public Color shimmerColor = Color.white;
+    [SerializeField] private Color highlightEmissionColor = new Color(0.3f, 0.3f, 0.3f);
+    [SerializeField] private float shimmerDuration = 1.5f;
 
-    [Tooltip("Qué tan intenso es el brillo máximo.")]
-    [Range(0f, 2f)]
-    public float intensity = 0.5f;
-
-    private Coroutine shimmerCoroutine;
+    private Material materialInstance;
+    private Sequence shimmerSequence;
 
     private void Awake()
     {
-        objectRenderer = GetComponent<Renderer>();
+        Renderer objectRenderer = GetComponent<Renderer>();
         if (objectRenderer != null)
         {
             materialInstance = objectRenderer.material;
@@ -30,35 +22,32 @@ public class ShimmerEffect : MonoBehaviour
 
     public void StartShimmer()
     {
-        if (shimmerCoroutine == null && materialInstance != null)
-        {
-            shimmerCoroutine = StartCoroutine(ShimmerRoutine());
-        }
+        if (materialInstance == null) return;
+
+        // Detenemos cualquier secuencia anterior para evitar solapamientos
+        shimmerSequence?.Kill();
+
+        // Creamos una secuencia de DOTween
+        shimmerSequence = DOTween.Sequence();
+        shimmerSequence.Append(materialInstance.DOColor(highlightEmissionColor, "_EmissionColor", shimmerDuration))
+                       .Append(materialInstance.DOColor(Color.black, "_EmissionColor", shimmerDuration))
+                       .SetLoops(-1, LoopType.Restart); // Bucle infinito
     }
 
     public void StopShimmer()
     {
-        if (shimmerCoroutine != null)
-        {
-            StopCoroutine(shimmerCoroutine);
-            shimmerCoroutine = null;
-        }
+        // Detenemos la secuencia y reseteamos el color
+        shimmerSequence?.Kill();
         if (materialInstance != null)
         {
-            materialInstance.SetColor("_EmissionColor", baseEmissionColor);
+            // Usamos un tween para que el apagado sea suave
+            materialInstance.DOColor(Color.black, "_EmissionColor", 0.5f);
         }
     }
 
-    private IEnumerator ShimmerRoutine()
+    private void OnDestroy()
     {
-        float frequency = 1.5f;
-        while (true)
-        {
-            // Usamos Sin para la pulsación y lo multiplicamos por el color y la intensidad
-            float emissionValue = Mathf.Abs(Mathf.Sin(Time.time * frequency));
-            Color finalColor = shimmerColor * emissionValue * intensity;
-            materialInstance.SetColor("_EmissionColor", finalColor);
-            yield return null;
-        }
+        // Buena práctica: asegurarse de detener los tweens cuando el objeto se destruye
+        shimmerSequence?.Kill();
     }
 }
