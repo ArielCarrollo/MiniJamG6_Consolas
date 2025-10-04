@@ -26,6 +26,9 @@ public class UIView : MonoBehaviour
     private RectTransform pistaRectTransform; // Para el efecto de barrido
     private float pistaAncho; // Para calcular las posiciones del barrido
 
+    [Header("Configuración de Animaciones")]
+    [Tooltip("Velocidad del efecto de escritura (caracteres por segundo).")]
+    public float velocidadDeEscritura = 20f;
     private void Awake()
     {
         // Guardamos la referencia al RectTransform de la pista
@@ -59,7 +62,28 @@ public class UIView : MonoBehaviour
 
     public void MostrarPensamiento(string texto, float opacidad)
     {
-        ActualizarTextoConFundido(textoPensamientos, texto, opacidad);
+        // Detiene cualquier animación anterior en este texto
+        textoPensamientos.DOKill();
+
+        // Si el nuevo texto es el mismo que ya se muestra, no hacemos nada
+        if (textoPensamientos.text == texto) return;
+
+        // Si el texto a mostrar está vacío, simplemente lo borramos con un fundido
+        if (string.IsNullOrEmpty(texto))
+        {
+            textoPensamientos.DOFade(0, 0.25f).OnComplete(() => textoPensamientos.text = "");
+            return;
+        }
+
+        // Preparamos el texto para la animación
+        textoPensamientos.text = "";
+        textoPensamientos.alpha = opacidad; // Establecemos la opacidad final desde el principio
+
+        // Calculamos la duración basada en la longitud del texto y la velocidad
+        float duracion = texto.Length / velocidadDeEscritura;
+
+        // Usamos DOText para el efecto de "máquina de escribir"
+        textoPensamientos.DOText(texto, duracion).SetEase(Ease.Linear);
     }
 
     public void MostrarPista(string texto)

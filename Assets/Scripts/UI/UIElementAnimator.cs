@@ -1,71 +1,65 @@
 using UnityEngine;
-using DG.Tweening; // ¡Importante!
+using DG.Tweening;
 
-/// <summary>
-/// Un componente genérico para activar y desactivar GameObjects con animaciones de DOTween.
-/// </summary>
-[RequireComponent(typeof(CanvasGroup))]
 public class UIElementAnimator : MonoBehaviour
 {
     [Header("Configuración del Efecto")]
-    [SerializeField] private float animationDuration = 0.3f;
-    [SerializeField] private Ease easeType = Ease.OutQuad;
+    [SerializeField] private float animationDuration = 0.4f;
+    [SerializeField] private Ease easeType = Ease.OutBack; // Un ease con un poco más de personalidad
     [SerializeField] private AnimationType animationType = AnimationType.Both;
 
     public enum AnimationType { Fade, Scale, Both }
 
-    private CanvasGroup canvasGroup;
-    private Vector3 originalScale;
-
-    private void Awake()
+    public void Show(GameObject target)
     {
-        canvasGroup = GetComponent<CanvasGroup>();
-        originalScale = transform.localScale;
-    }
+        // Detiene animaciones previas en el objeto para evitar conflictos
+        target.transform.DOKill();
+        CanvasGroup cg = GetCanvasGroup(target);
+        cg.DOKill();
 
-    /// <summary>
-    /// Activa y anima el GameObject.
-    /// </summary>
-    public void Show()
-    {
-        // Detiene animaciones previas para evitar conflictos
-        transform.DOKill();
-        canvasGroup.DOKill();
-
-        gameObject.SetActive(true);
+        target.SetActive(true);
 
         if (animationType == AnimationType.Fade || animationType == AnimationType.Both)
         {
-            canvasGroup.alpha = 0f;
-            canvasGroup.DOFade(1f, animationDuration).SetEase(easeType);
+            cg.alpha = 0f;
+            cg.DOFade(1f, animationDuration).SetEase(easeType);
         }
 
         if (animationType == AnimationType.Scale || animationType == AnimationType.Both)
         {
-            transform.localScale = Vector3.zero;
-            transform.DOScale(originalScale, animationDuration).SetEase(easeType);
+            target.transform.localScale = Vector3.zero;
+            target.transform.DOScale(1f, animationDuration).SetEase(easeType);
         }
     }
 
-    /// <summary>
-    /// Desactiva y anima el GameObject.
-    /// </summary>
-    public void Hide()
+    public void Hide(GameObject target)
     {
-        transform.DOKill();
-        canvasGroup.DOKill();
+        target.transform.DOKill();
+        CanvasGroup cg = GetCanvasGroup(target);
+        cg.DOKill();
 
         if (animationType == AnimationType.Fade || animationType == AnimationType.Both)
         {
-            canvasGroup.DOFade(0f, animationDuration).SetEase(easeType);
+            cg.DOFade(0f, animationDuration).SetEase(easeType);
         }
 
         if (animationType == AnimationType.Scale || animationType == AnimationType.Both)
         {
-            transform.DOScale(Vector3.zero, animationDuration).SetEase(easeType);
+            target.transform.DOScale(Vector3.zero, animationDuration).SetEase(easeType);
         }
 
-        // Desactivamos el objeto después de que la animación termine
-        DOVirtual.DelayedCall(animationDuration, () => gameObject.SetActive(false));
+        // Desactivamos el objeto después de que la animación termine para optimizar
+        DOVirtual.DelayedCall(animationDuration, () => target.SetActive(false));
+    }
+
+    // Método auxiliar para obtener o añadir un CanvasGroup al objeto
+    private CanvasGroup GetCanvasGroup(GameObject target)
+    {
+        CanvasGroup cg = target.GetComponent<CanvasGroup>();
+        if (cg == null)
+        {
+            cg = target.AddComponent<CanvasGroup>();
+        }
+        return cg;
     }
 }

@@ -11177,8 +11177,12 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 920aefe44c1387c4e93325990cc02d16, type: 3}
   - name: Despedida
     clip: {fileID: 8300000, guid: e57e669b604d1a24f969e8f81b8f0426, type: 3}
+  - name: HintUpdate
+    clip: {fileID: 8300000, guid: 0fe455473679d4d6a85db8a2f9330cbf, type: 3}
+  - name: OpenBook
+    clip: {fileID: 8300000, guid: 59e2d9940033545829537d70cdc9f04f, type: 3}
   - name: ButtonClick
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 292aad821b16948af9cba9deaca16525, type: 3}
 --- !u!82 &1295053380
 AudioSource:
   m_ObjectHideFlags: 0
@@ -13409,6 +13413,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicName: MenuMusic
+  volume: 0.8
   loop: 1
 --- !u!64 &1847429421
 MeshCollider:

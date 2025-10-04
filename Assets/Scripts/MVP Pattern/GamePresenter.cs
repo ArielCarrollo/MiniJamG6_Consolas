@@ -109,24 +109,33 @@ public class GamePresenter : MonoBehaviour
     // --- LÓGICA DEL SISTEMA DE MISIÓN ---
     private void ActualizarTextoDePista()
     {
+        string textoPistaAnterior = textoPistaActual;
+
         // Busca la primera misión NO completada y muestra su pista
         foreach (var paso in pasosDeMision)
         {
             if (!misionesCompletadas.Contains(paso.missionID))
             {
                 textoPistaActual = paso.hintText;
-                view.MostrarPista(textoPistaActual);
-                return;
+                break; // Salimos del bucle en cuanto encontramos la pista
             }
         }
 
-        if (misionFinalDesbloqueada)
+        // Si no se encontró ninguna misión pendiente, comprobamos si la final está desbloqueada
+        if (misionesCompletadas.Count >= pasosDeMision.Count && misionFinalDesbloqueada)
         {
             textoPistaActual = "Quizá... quizá mañana podría ser diferente.";
-            view.MostrarPista(textoPistaActual);
         }
-    }
 
+        // --- EFECTO DE SONIDO ---
+        // Solo reproducimos el sonido si el texto de la pista ha cambiado realmente
+        if (textoPistaActual != textoPistaAnterior && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("HintUpdate", 0.7f);
+        }
+
+        view.MostrarPista(textoPistaActual);
+    }
     public void CompletarMision(string id)
     {
         if (!usarSistemaDeMision || misionesCompletadas.Contains(id)) return;
@@ -214,13 +223,18 @@ public class GamePresenter : MonoBehaviour
 
     public void Evento_LeerDiario()
     {
-        // Si el panel ya está abierto, no hacemos nada para evitar re-animaciones.
         if (isUIPanelOpen) return;
+
+        // --- EFECTO DE SONIDO ---
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("OpenBook", 1f);
+        }
 
         view.MostrarPanelDiario(true);
         if (playerInput != null) playerInput.DeactivateInput();
 
-        isUIPanelOpen = true; // ACTUALIZADO: Ponemos el interruptor en ON
+        isUIPanelOpen = true;
 
         CompletarMision("diarioLeido");
     }
