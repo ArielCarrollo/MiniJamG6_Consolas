@@ -186,7 +186,15 @@ public class Act1Presenter : GamePresenterBase
 
         view.MostrarPanelDiario(false);
     }
-
+    public override bool TryCloseUIPanel()
+    {
+        if (IsUIPanelOpen())
+        {
+            Evento_CerrarDiario();
+            return true;
+        }
+        return false;
+    }
     public void Evento_AtreverseConFalda()
     {
         if (!misionFinalDesbloqueada)

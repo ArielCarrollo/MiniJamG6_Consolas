@@ -19,18 +19,34 @@ public class GamePresenterBase : MonoBehaviour
     // 'virtual' permite que las clases que hereden puedan sobreescribir este método si lo necesitan.
     protected virtual void Awake()
     {
-        if (Instance != null && Instance != this) Destroy(gameObject);
-        else Instance = this;
+        // Si ya existe una instancia de un presenter, destruimos este nuevo
+        // y detenemos la ejecución para evitar errores.
+        if (Instance != null)
+        {
+            Debug.LogError("Se ha detectado más de un GamePresenter en la escena. Destruyendo el duplicado.");
+            Destroy(gameObject);
+            return;
+        }
+        // Si no hay ninguna, esta se convierte en la instancia activa.
+        Instance = this;
+    }
+
+    // --- ¡ESTA ES LA PARTE CLAVE QUE FALTABA! ---
+    // Cuando la escena se descarga y el presenter se destruye,
+    // limpiamos la variable estática para que el presenter de la siguiente escena
+    // pueda tomar su lugar.
+    protected virtual void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     protected virtual void Start()
     {
-        // Lógica de inicio común a casi todas las escenas.
         if (playerInput != null) playerInput.ActivateInput();
-        if (view != null)
-        {
-            view.ActualizarBarraCoraje(playerData.Coraje);
-        }
+        if (view != null) view.ActualizarBarraCoraje(playerData.Coraje);
     }
 
     // --- Métodos de Estado y Notificación ---
@@ -50,18 +66,33 @@ public class GamePresenterBase : MonoBehaviour
             if (playerInput != null) playerInput.ActivateInput();
         }
     }
+    public virtual bool TryCloseUIPanel()
+    {
+        // Por defecto no hay nada que cerrar
+        return false;
+    }
 
     // Estos métodos son 'virtual' para que los presenters hijos puedan darles un comportamiento especial.
     public virtual void OnGazeEnterInteractable(InteractableObject objeto)
     {
-        view.MostrarPensamiento(objeto.textoAlMirar, 1f);
-        view.MostrarPrompt(objeto.textoDelPrompt);
+        objeto.onGazeEnter?.Invoke();
+
+        // Si tiene titileo manual, lo apaga al mirar
+        if (objeto.titileoManual)
+        {
+            objeto.ApagarTitileo();
+        }
+
+        // Mostrar pensamiento/prompt como siempre
+        view?.MostrarPensamiento(objeto.textoAlMirar, 1f);
+        view?.MostrarPrompt(objeto.textoDelPrompt);
     }
 
     public virtual void OnGazeExitInteractable(InteractableObject objeto)
     {
-        view.MostrarPensamiento("", 1f);
-        view.OcultarPrompt();
+        objeto.onGazeExit?.Invoke();
+        view?.MostrarPensamiento("", 1f);
+        view?.OcultarPrompt();
     }
 
     // --- Lógica de Transición (Común a todos) ---
@@ -77,5 +108,21 @@ public class GamePresenterBase : MonoBehaviour
         view.IniciarFundidoDeTransicion(duracionFundido);
         yield return new WaitForSeconds(duracionFundido);
         SceneManager.LoadScene(nombreEscena);
+    }
+    protected IEnumerator RutinaDeFundidoDeEntrada()
+    {
+        // Esperamos un frame para que todo se cargue correctamente
+        yield return null;
+
+        // Le pedimos a la vista que haga el fundido de transparente a visible
+        if (view != null)
+        {
+            view.IniciarFundidoDeEntrada(0.5f); // Una duración corta para el fade-in
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // Una vez que la pantalla es visible, activamos el control del jugador
+        if (playerInput != null) playerInput.ActivateInput();
+        if (view != null) view.ActualizarBarraCoraje(playerData.Coraje);
     }
 }

@@ -9,6 +9,7 @@ public class SoundManager : MonoBehaviour
 
     [Header("Audio Sources")]
     [SerializeField] private AudioSource musicSource;
+    [SerializeField] private AudioSource ambienceSource;
     [SerializeField] private AudioSource sfxSource;
 
     [Header("Librería de Sonidos")]
@@ -28,15 +29,13 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Reproduce una pista de música con un volumen específico.
-    /// </summary>
+    // Música melódica principal (solo una a la vez)
     public void PlayMusic(string name, float volume = 1.0f, bool loop = true, float fadeDuration = 1.5f)
     {
         Sound s = sounds.FirstOrDefault(sound => sound.name == name);
         if (s == null)
         {
-            Debug.LogWarning($"Sonido: '{name}' no encontrado.");
+            Debug.LogWarning($"Sonido musical: '{name}' no encontrado.");
             return;
         }
 
@@ -65,18 +64,63 @@ public class SoundManager : MonoBehaviour
         musicSource.DOFade(volume, fadeDuration);
     }
 
-    /// <summary>
-    /// Reproduce un efecto de sonido con un volumen específico.
-    /// </summary>
+    // Ambientes (ej: murmullo, estación, naturaleza), independiente de la música
+    public void PlayAmbience(string name, float volume = 1.0f, bool loop = true, float fadeDuration = 1.5f)
+    {
+        Sound s = sounds.FirstOrDefault(sound => sound.name == name);
+        if (s == null)
+        {
+            Debug.LogWarning($"Sonido de ambiente: '{name}' no encontrado.");
+            return;
+        }
+
+        if (ambienceSource.clip == s.clip && ambienceSource.isPlaying) return;
+
+        ambienceSource.DOKill();
+
+        if (ambienceSource.isPlaying)
+        {
+            ambienceSource.DOFade(0, fadeDuration / 2).OnComplete(() =>
+            {
+                StartNewAmbience(s, volume, loop, fadeDuration / 2);
+            });
+        }
+        else
+        {
+            StartNewAmbience(s, volume, loop, fadeDuration);
+        }
+    }
+
+    private void StartNewAmbience(Sound s, float volume, bool loop, float fadeDuration)
+    {
+        ambienceSource.clip = s.clip;
+        ambienceSource.loop = loop;
+        ambienceSource.Play();
+        ambienceSource.DOFade(volume, fadeDuration);
+    }
+
+    // Efectos puntuales (timbres, acciones, feedback)
     public void PlaySFX(string name, float volume = 1.0f)
     {
         Sound s = sounds.FirstOrDefault(sound => sound.name == name);
         if (s == null)
         {
-            Debug.LogWarning($"Sonido: '{name}' no encontrado.");
+            Debug.LogWarning($"SFX: '{name}' no encontrado.");
             return;
         }
-        // Usamos la sobrecarga de PlayOneShot que acepta un volumen.
         sfxSource.PlayOneShot(s.clip, volume);
+    }
+
+    // Métodos opcionales para detener/cambiar pistas individualmente
+    public void StopMusic(float fadeDuration = 1.0f)
+    {
+        if (musicSource.isPlaying)
+            musicSource.DOFade(0, fadeDuration).OnComplete(() => musicSource.Stop());
+    }
+
+    public void StopAmbience(float fadeDuration = 1.0f)
+    {
+        if (ambienceSource.isPlaying)
+            ambienceSource.DOFade(0, fadeDuration).OnComplete(() => ambienceSource.Stop());
     }
 }

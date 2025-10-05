@@ -25,7 +25,7 @@ public class SceneLoadTrigger : MonoBehaviour
                 transicionIniciada = true; // Activamos el seguro
 
                 // --- MODIFICADO: Le pedimos al GamePresenter que maneje la transición ---
-                GamePresenter.Instance.IniciarTransicionAEscena(nombreDeLaEscenaACargar);
+                Act2Presenter.Instance.IniciarTransicionAEscena(nombreDeLaEscenaACargar);
             }
             else
             {

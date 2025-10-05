@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using DG.Tweening; // ¡Importante! Añadir el namespace de DOTween
+using System;
 
 public class UIView : MonoBehaviour
 {
@@ -47,6 +48,12 @@ public class UIView : MonoBehaviour
             }
         }
     }
+
+    internal void MostrarPista(object textoPistaActual)
+    {
+        throw new NotImplementedException();
+    }
+
     void Start()
     {
         // Asegurarse de que todo empieza en el estado correcto
@@ -214,5 +221,19 @@ public class UIView : MonoBehaviour
         if (panelFadeTransicion == null) return;
         // Una sola línea para iniciar el fundido. ¡Mucho más limpio!
         panelFadeTransicion.DOFade(1, duracion);
+    }
+    public void IniciarFundidoDeEntrada(float duracion)
+    {
+        if (panelFadeTransicion == null) return;
+
+        // Empezamos con el panel en negro (alpha=1) y lo hacemos transparente.
+        panelFadeTransicion.alpha = 1;
+        panelFadeTransicion.DOFade(0, duracion);
+    }
+    public void FinalizarFundidoDeEntrada(float duracion)
+    {
+        if (panelFadeTransicion == null) return;
+        // Anima la opacidad del panel de 1 a 0.
+        panelFadeTransicion.DOFade(0, duracion);
     }
 }

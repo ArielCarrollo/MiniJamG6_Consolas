@@ -181,8 +181,8 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1723337848}
-        m_TargetAssemblyTypeName: GamePresenter, Assembly-CSharp
+      - m_Target: {fileID: 1723337851}
+        m_TargetAssemblyTypeName: Act1Presenter, Assembly-CSharp
         m_MethodName: Evento_AtreverseConFalda
         m_Mode: 1
         m_Arguments:
@@ -1135,8 +1135,8 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1723337848}
-        m_TargetAssemblyTypeName: GamePresenter, Assembly-CSharp
+      - m_Target: {fileID: 1723337851}
+        m_TargetAssemblyTypeName: Act1Presenter, Assembly-CSharp
         m_MethodName: Evento_LeerDiario
         m_Mode: 1
         m_Arguments:
@@ -1769,7 +1769,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3124,7 +3124,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1723337848}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GamePresenter, Assembly-CSharp
         m_MethodName: Evento_CerrarDiario
         m_Mode: 1
@@ -12645,7 +12645,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3287e46221c31d34081c9dbaeaa17539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  view: {fileID: 1585041811}
   distanciaInteraccion: 1
   radioEsfera: 0.1
   capaInteraccion:
@@ -13028,6 +13027,7 @@ MonoBehaviour:
   panelFadeTransicion: {fileID: 472737695}
   sliderCoraje: {fileID: 688815695}
   panelDiario: {fileID: 1533397378}
+  velocidadDeEscritura: 20
 --- !u!224 &1585041812
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13523,7 +13523,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1723337849}
-  - component: {fileID: 1723337848}
+  - component: {fileID: 1723337851}
   - component: {fileID: 1723337850}
   m_Layer: 0
   m_Name: _GamePresenter_
@@ -13532,37 +13532,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1723337848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1723337847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e001237999b5e5488bbf780a91fde0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  view: {fileID: 1585041811}
-  playerInput: {fileID: 1276127076}
-  playerData: {fileID: 11400000, guid: 7ce5b9b121fc47940961976eba6a9c96, type: 2}
-  playerController: {fileID: 0}
-  cameraController: {fileID: 0}
-  textoLiricaInicial: "Si fuera m\xE1s guapa y un poco m\xE1s lista... si fuera especial..."
-  proximaEscena: Acto2_EstacionRutina
-  usarSistemaDeMision: 1
-  pasosDeMision:
-  - missionID: diarioLeido
-    hintText: "Deber\xEDa recordar lo que pas\xF3 ayer... mi diario est\xE1 en el
-      escritorio."
-  - missionID: armarioVisto
-    hintText: "\xBFQu\xE9 me pongo hoy? Lo de siempre est\xE1 en el armario."
-  misionFinalID: faldaElegida
-  objetosMisionInicial:
-  - {fileID: 321225169}
-  - {fileID: 1739381542}
-  objetoMisionFinal: {fileID: 11999}
 --- !u!4 &1723337849
 Transform:
   m_ObjectHideFlags: 0
@@ -13593,6 +13562,34 @@ MonoBehaviour:
   musicName: Act1Music
   volume: 0.35
   loop: 1
+--- !u!114 &1723337851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1723337847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b19af760db3c1e4ca9c69118a2dd3bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  view: {fileID: 1585041811}
+  playerInput: {fileID: 1276127076}
+  playerData: {fileID: 11400000, guid: 7ce5b9b121fc47940961976eba6a9c96, type: 2}
+  proximaEscena: Acto2_EstacionRutina
+  textoLiricaInicial: "Si fuera m\xE1s guapa y un poco m\xE1s lista... si fuera especial..."
+  pasosDeMision:
+  - missionID: diarioLeido
+    hintText: "Deber\xEDa recordar lo que pas\xF3 ayer... mi diario est\xE1 en el
+      escritorio."
+  - missionID: armarioVisto
+    hintText: "\xBFQu\xE9 me pongo hoy? Lo de siempre est\xE1 en el armario."
+  misionFinalID: faldaElegida
+  objetosMisionInicial:
+  - {fileID: 321225169}
+  - {fileID: 1739381542}
+  objetoMisionFinal: {fileID: 11999}
 --- !u!1 &1739381541
 GameObject:
   m_ObjectHideFlags: 0
@@ -13634,8 +13631,8 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1723337848}
-        m_TargetAssemblyTypeName: GamePresenter, Assembly-CSharp
+      - m_Target: {fileID: 1723337851}
+        m_TargetAssemblyTypeName: Act1Presenter, Assembly-CSharp
         m_MethodName: CompletarMision
         m_Mode: 5
         m_Arguments:
