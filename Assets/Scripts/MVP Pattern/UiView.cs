@@ -49,10 +49,10 @@ public class UIView : MonoBehaviour
         }
     }
 
-    internal void MostrarPista(object textoPistaActual)
-    {
-        throw new NotImplementedException();
-    }
+    //internal void MostrarPista(object textoPistaActual)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     void Start()
     {
@@ -69,27 +69,29 @@ public class UIView : MonoBehaviour
 
     public void MostrarPensamiento(string texto, float opacidad)
     {
-        // Detiene cualquier animación anterior en este texto
+        // NO DOKill cada frame salvo que cambie el texto de verdad
+        if (textoPensamientos.text == texto && Mathf.Approximately(textoPensamientos.alpha, opacidad))
+            return;
+
         textoPensamientos.DOKill();
 
-        // Si el nuevo texto es el mismo que ya se muestra, no hacemos nada
-        if (textoPensamientos.text == texto) return;
+        // Si el nuevo texto es el mismo y solo cambia opacidad, ajusta suavemente
+        if (textoPensamientos.text == texto)
+        {
+            textoPensamientos.DOFade(opacidad, 0.2f);
+            return;
+        }
 
-        // Si el texto a mostrar está vacío, simplemente lo borramos con un fundido
+        // Nuevo texto: animación de aparición
         if (string.IsNullOrEmpty(texto))
         {
             textoPensamientos.DOFade(0, 0.25f).OnComplete(() => textoPensamientos.text = "");
             return;
         }
 
-        // Preparamos el texto para la animación
         textoPensamientos.text = "";
-        textoPensamientos.alpha = opacidad; // Establecemos la opacidad final desde el principio
-
-        // Calculamos la duración basada en la longitud del texto y la velocidad
+        textoPensamientos.alpha = opacidad;
         float duracion = texto.Length / velocidadDeEscritura;
-
-        // Usamos DOText para el efecto de "máquina de escribir"
         textoPensamientos.DOText(texto, duracion).SetEase(Ease.Linear);
     }
 
