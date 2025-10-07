@@ -38,11 +38,9 @@ public class Act4Presenter : GamePresenterBase
     private bool haRespirado = false;
     private bool enDialogo = false;
 
-    // --- Ciclo de Vida y Eventos de Input ---
     protected override void Awake()
     {
         base.Awake();
-        playerInput?.DeactivateInput();
         triggerDialogo?.gameObject.SetActive(false);
     }
 
@@ -55,8 +53,6 @@ public class Act4Presenter : GamePresenterBase
 
     private void OnEnable() => InputReader.OnInteract += Evento_Interactuar;
     private void OnDisable() => InputReader.OnInteract -= Evento_Interactuar;
-
-    // --- Lógica de la Escena ---
 
     private void Evento_Interactuar()
     {
@@ -71,8 +67,8 @@ public class Act4Presenter : GamePresenterBase
     {
         if (enDialogo) return;
         enDialogo = true;
-        playerInput?.DeactivateInput();
-        MostrarPistaConSonido(""); // Limpiamos la pista
+        playerController?.CongelarMovimiento(true);
+        MostrarPistaConSonido("");
         dialogueManager?.IniciarDialogo();
     }
 
@@ -87,6 +83,9 @@ public class Act4Presenter : GamePresenterBase
 
     private IEnumerator RutinaDeInicioActo4()
     {
+        playerController?.CongelarMovimiento(true);
+        mainCameraController?.PermitirRotacion(false);
+
         if (view != null && !string.IsNullOrEmpty(textoLiricaInicial))
         {
             view.SecuenciaInicial(textoLiricaInicial, 2f, 2f, 1.5f);
@@ -95,12 +94,15 @@ public class Act4Presenter : GamePresenterBase
 
         MostrarPistaConSonido(textoPistaRutina);
         view?.MostrarPensamiento(textoPensamientoRutina, 0.8f);
-        playerInput?.ActivateInput();
+
+        playerController?.CongelarMovimiento(false);
+        mainCameraController?.PermitirRotacion(true);
     }
 
     public void IniciarSecuenciaEncuentro()
     {
-        playerInput?.DeactivateInput();
+        playerController?.CongelarMovimiento(true);
+        mainCameraController?.PermitirRotacion(false);
         StartCoroutine(RutinaEncuentroConChico());
     }
 
@@ -113,7 +115,7 @@ public class Act4Presenter : GamePresenterBase
         view?.MostrarPensamiento(textoPensamientoPanico, 0.9f);
         view?.ActualizarBarraCoraje(playerData.Coraje);
         SoundManager.Instance?.PlayLoopingSFX(nombreSfxLatido, volumenLatido);
-        VibrationManager.Vibrate(0.7f, 0.7f, 1.5f); // Vibración fuerte de pánico
+        VibrationManager.Vibrate(0.7f, 0.7f, 1.5f);
         camController?.IniciarZoomHaciaObjetivo(objetivoZoom, fovZoom, duracionZoom);
         yield return new WaitForSeconds(1.0f);
 
@@ -126,7 +128,7 @@ public class Act4Presenter : GamePresenterBase
         escenaActiva = false;
         view?.OcultarPrompt();
         SoundManager.Instance?.StopLoopingSFX();
-        VibrationManager.Vibrate(0.3f, 0.3f, 0.2f); // Vibración sutil de alivio
+        VibrationManager.Vibrate(0.3f, 0.3f, 0.2f);
 
         if (playerData != null)
         {
@@ -141,9 +143,10 @@ public class Act4Presenter : GamePresenterBase
         view?.OcultarPensamiento();
 
         MostrarPistaConSonido(textoPistaAcercarse);
+
+        playerController?.CongelarMovimiento(false);
         playerController?.PermitirMovimientoLateral(false);
-        mainCameraController?.PermitirRotacion(false);
-        playerInput?.ActivateInput();
+
         triggerDialogo?.gameObject.SetActive(true);
     }
 
@@ -151,11 +154,11 @@ public class Act4Presenter : GamePresenterBase
     {
         MostrarPistaConSonido(pista);
         view?.MostrarPensamiento(pensamiento, 0.9f);
-        VibrationManager.Vibrate(0.4f, 0.4f, 0.3f); // Vibración de emoción/resolución
+        VibrationManager.Vibrate(0.4f, 0.4f, 0.3f);
 
+        playerController?.CongelarMovimiento(false);
         playerController?.PermitirMovimientoLateral(true);
         mainCameraController?.PermitirRotacion(true);
-        playerInput?.ActivateInput();
 
         npc?.IniciarSeguimiento(playerTransform);
     }

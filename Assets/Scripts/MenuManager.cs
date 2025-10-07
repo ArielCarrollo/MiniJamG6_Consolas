@@ -1,76 +1,97 @@
-// Importamos el namespace de TextMeshPro para un texto de mejor calidad.
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // Usar TextMeshPro en lugar de UnityEngine.UI
+using TMPro;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
+using System.Collections;
+using UnityEngine.InputSystem; // ¡IMPORTANTE! Añade este namespace.
 
 public class MenuManagerMejorado : MonoBehaviour
 {
-    // [System.Serializable] permite que esta estructura aparezca en el Inspector de Unity.
-    // Así podemos organizar mejor la información de cada acto.
     [System.Serializable]
     public struct ActoInfo
     {
-        public string nombreEscena;      // El nombre del archivo de la escena (ej: "Acto1_Habitacion")
-        public string nombreParaMostrar; // El nombre que verá el jugador (ej: "La Habitación")
+        public string nombreEscena;
+        public string nombreParaMostrar;
     }
 
+    [Header("Referencias Clave")]
+    [Tooltip("El componente PlayerInput del jugador. Esencial para cambiar entre control de juego y UI.")]
+    [SerializeField] private PlayerInput playerInput; // ¡LA REFERENCIA MÁS IMPORTANTE!
+
     [Header("Paneles UI")]
-    [Tooltip("Panel que contiene los botones de Jugar, Seleccionar Acto, Salir, etc.")]
     [SerializeField] private GameObject panelMenuPrincipal;
-    [Tooltip("Panel para elegir un acto específico.")]
     [SerializeField] private GameObject panelSeleccionActo;
 
     [Header("UI Selección de Acto")]
-    [Tooltip("Componente de texto para mostrar el nombre del acto seleccionado.")]
-    [SerializeField] private TextMeshProUGUI textoActoSeleccionado; // Usamos TextMeshProUGUI para mejor calidad visual
+    [SerializeField] private TextMeshProUGUI textoActoSeleccionado;
 
     [Header("Configuración de Actos")]
-    [Tooltip("Lista de todos los actos o niveles del juego.")]
     [SerializeField] private List<ActoInfo> actos;
+
+    [Header("Botones para Navegación con Mando")]
+    [SerializeField] private GameObject primerBotonPrincipal;
+    [SerializeField] private GameObject primerBotonSeleccionActo;
 
     private int indiceActoActual = 0;
 
     private void Start()
     {
-        // Aseguramos que los paneles y el texto inicial estén en el estado correcto.
+        // --- ¡LA LÍNEA CLAVE QUE SOLUCIONA TODO! ---
+        // Le decimos al PlayerInput que, para esta escena, use el mapa de acciones llamado "UI".
+        // Asegúrate de que tu mapa de acciones de UI se llame exactamente "UI".
+        playerInput?.SwitchCurrentActionMap("UI");
+
+        // Ahora que el input está en el modo correcto, mostramos el panel y seleccionamos el botón.
         MostrarPanelPrincipal();
-        ActualizarUITextoActo();
     }
 
-    #region Navegación Principal
+    private void MostrarPanelPrincipal()
+    {
+        panelMenuPrincipal.SetActive(true);
+        panelSeleccionActo.SetActive(false);
+        StartCoroutine(EstablecerSeleccionado(primerBotonPrincipal));
+    }
+
+    private void MostrarPanelSeleccionActo()
+    {
+        panelMenuPrincipal.SetActive(false);
+        panelSeleccionActo.SetActive(true);
+        ActualizarUITextoActo();
+        StartCoroutine(EstablecerSeleccionado(primerBotonSeleccionActo));
+    }
+
+    private IEnumerator EstablecerSeleccionado(GameObject boton)
+    {
+        EventSystem.current.SetSelectedGameObject(null);
+        yield return new WaitForEndOfFrame();
+        EventSystem.current.SetSelectedGameObject(boton);
+    }
+
+    #region Botones
     public void BotonJugar()
     {
-        // El botón "Jugar" siempre carga el primer acto de la lista.
+        // Antes de cargar la escena de juego, volvemos al mapa "Gameplay".
+        playerInput?.SwitchCurrentActionMap("Gameplay");
         if (actos.Count > 0)
         {
             SceneManager.LoadScene(actos[0].nombreEscena);
-        }
-        else
-        {
-            Debug.LogWarning("No hay actos definidos en la lista para jugar.");
         }
     }
 
     public void BotonAbrirSeleccionActo()
     {
-        panelMenuPrincipal.SetActive(false);
-        panelSeleccionActo.SetActive(true);
+        MostrarPanelSeleccionActo();
     }
 
     public void BotonSalir()
     {
-        Debug.Log("Saliendo del juego...");
         Application.Quit();
-
-        // La siguiente línea es útil para probar en el editor de Unity, ya que Application.Quit() no funciona ahí.
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
     }
-    #endregion
 
-    #region Selección de Acto
     public void BotonCerrarSeleccionActo()
     {
         MostrarPanelPrincipal();
@@ -78,15 +99,12 @@ public class MenuManagerMejorado : MonoBehaviour
 
     public void BotonSiguienteActo()
     {
-        // Usamos el operador de módulo (%) para que el índice vuelva a 0 automáticamente
-        // después de llegar al final de la lista. Es más limpio y eficiente.
         indiceActoActual = (indiceActoActual + 1) % actos.Count;
         ActualizarUITextoActo();
     }
 
     public void BotonAnteriorActo()
     {
-        // Esta lógica maneja el caso de ir hacia atrás y llegar al principio de la lista.
         indiceActoActual--;
         if (indiceActoActual < 0)
         {
@@ -97,25 +115,17 @@ public class MenuManagerMejorado : MonoBehaviour
 
     public void BotonJugarActoSeleccionado()
     {
+        // Antes de cargar la escena de juego, volvemos al mapa "Gameplay".
+        playerInput?.SwitchCurrentActionMap("Gameplay");
         SceneManager.LoadScene(actos[indiceActoActual].nombreEscena);
     }
     #endregion
 
-    #region Métodos Privados
     private void ActualizarUITextoActo()
     {
         if (textoActoSeleccionado != null && actos.Count > 0)
         {
-            // Ahora simplemente leemos el nombre para mostrar, sin manipular strings.
             textoActoSeleccionado.text = actos[indiceActoActual].nombreParaMostrar;
         }
     }
-
-
-    private void MostrarPanelPrincipal()
-    {
-        panelMenuPrincipal.SetActive(true);
-        panelSeleccionActo.SetActive(false);
-    }
-    #endregion
 }

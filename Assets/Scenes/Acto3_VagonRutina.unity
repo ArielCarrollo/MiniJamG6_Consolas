@@ -2102,6 +2102,73 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!1 &907336678 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5489826104488316699, guid: f71041fd118fbb34aa9d2dd6a1d96fce, type: 3}
+  m_PrefabInstance: {fileID: 1252153253}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &907336680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907336678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f30cb890d2c0ca418570950fb83c326, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shimmerEffect: {fileID: 0}
+  textoAlMirar: 
+  textoDelPrompt: 
+  esObjetoDeMision: 0
+  idDeMision: 
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
+  onGazeEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  onGazeExit:
+    m_PersistentCalls:
+      m_Calls: []
+  titileoManual: 1
+--- !u!114 &907336681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907336678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e94c0c8c471e3034ea453d4c48fd819a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlightEmissionColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+  shimmerDuration: 1.5
+--- !u!65 &907336682
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 907336678}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1341231, y: 0.4261148, z: 1.8430804}
+  m_Center: {x: -0.0046470384, y: 0.03499735, z: 0.8986104}
 --- !u!1 &922472938 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -130441628335648368, guid: 0ce5da9aff052534b86fd665b64f7479, type: 3}
@@ -2249,7 +2316,7 @@ MonoBehaviour:
   proximaEscena: Acto4_EstacionEncuentro
   textoLiricoContexto: "De estaci\xF3n a estaci\xF3n, en frente t\xFA y yo, va y
     viene el silencio."
-  chicoInteractuable: {fileID: 0}
+  chicoInteractuable: {fileID: 907336680}
   chicoController: {fileID: 1654549662}
   camController: {fileID: 171892569}
   duracionEscena: 30
@@ -3554,6 +3621,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1616406060653692748, guid: f71041fd118fbb34aa9d2dd6a1d96fce, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1654549662}
+    - targetCorrespondingSourceObject: {fileID: 5489826104488316699, guid: f71041fd118fbb34aa9d2dd6a1d96fce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 907336682}
+    - targetCorrespondingSourceObject: {fileID: 5489826104488316699, guid: f71041fd118fbb34aa9d2dd6a1d96fce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 907336681}
+    - targetCorrespondingSourceObject: {fileID: 5489826104488316699, guid: f71041fd118fbb34aa9d2dd6a1d96fce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 907336680}
   m_SourcePrefab: {fileID: 100100000, guid: f71041fd118fbb34aa9d2dd6a1d96fce, type: 3}
 --- !u!1 &1259805670 stripped
 GameObject:
@@ -4629,6 +4705,7 @@ MonoBehaviour:
   textoPensamientos: {fileID: 1979322416}
   textoPistaDeMision: {fileID: 1965240914}
   textoPrompt: {fileID: 72377110}
+  textoSubtitulos: {fileID: 0}
   panelInicial: {fileID: 78679344}
   panelFadeTransicion: {fileID: 618310414}
   sliderCoraje: {fileID: 108546244}

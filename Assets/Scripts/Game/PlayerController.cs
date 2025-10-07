@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
 
     // NUEVO: Flag para controlar el movimiento lateral.
     private bool movimientoLateralPermitido = true;
+    private bool movimientoCongelado = false;
 
     private void OnEnable() => InputReader.OnMove += Move;
     private void OnDisable() => InputReader.OnMove -= Move;
@@ -30,6 +31,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (movimientoCongelado) return;
         if (playerInput != null && !playerInput.actions.enabled)
         {
             return;
@@ -58,5 +60,9 @@ public class PlayerController : MonoBehaviour
     public void PermitirMovimientoLateral(bool permitido)
     {
         movimientoLateralPermitido = permitido;
+    }
+    public void CongelarMovimiento(bool congelar)
+    {
+        movimientoCongelado = congelar;
     }
 }

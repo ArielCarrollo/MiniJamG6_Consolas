@@ -25,13 +25,11 @@ public class DialogueManager : MonoBehaviour
     public float pausaAntesDeRespuesta = 1.0f;
 
     [Header("Configuración de Vibración")]
-    [Tooltip("Vibración corta y nerviosa al hablar.")]
     public Vector3 vibraAlHablar = new Vector3(0.5f, 0.5f, 0.1f);
-    [Tooltip("Vibración cálida y suave al recibir respuesta.")]
     public Vector3 vibraAlRecibirRespuesta = new Vector3(0.3f, 0.3f, 0.3f);
 
     [Header("Textos Post-Diálogo")]
-    [TextArea(2, 4)] public string textoPistaFinal = "Sube al tren junto a Daniel.";
+    public string textoPistaFinal = "Sube al tren junto a Daniel.";
     [TextArea(3, 5)] public string textoPensamientoFinal = "No puedo creer que esto esté pasando...";
 
     private bool esperandoInput = false;
@@ -41,7 +39,6 @@ public class DialogueManager : MonoBehaviour
 
     private void Evento_Interactuar()
     {
-        // Si la corrutina de diálogo está esperando, esta acción la desbloquea.
         if (esperandoInput)
         {
             esperandoInput = false;
@@ -91,7 +88,6 @@ public class DialogueManager : MonoBehaviour
         act4Presenter?.FinalizarDialogoYActivarSeguimiento(npcChico, textoPistaFinal, textoPensamientoFinal);
     }
 
-    // Pequeña función de ayuda para manejar la espera de input.
     private IEnumerator EsperarInput()
     {
         esperandoInput = true;

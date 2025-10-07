@@ -11986,6 +11986,17 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &1276127077 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8761046170492354654, guid: 4598b743992a94e489d808f56461e8af, type: 3}
+  m_PrefabInstance: {fileID: 703111831}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1276127068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 250bc2a04c559cf4999f1f70007e21a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1318868885 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4468388833731620884, guid: 8defe7bae9e12d54ca5030f78efce47b, type: 3}
@@ -12707,6 +12718,17 @@ MonoBehaviour:
   capaInteraccion:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &1451035405 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3988774351334543744, guid: 4598b743992a94e489d808f56461e8af, type: 3}
+  m_PrefabInstance: {fileID: 703111831}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1451035397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1801f8f19fcbc42987b6b28cb33a2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1461010819 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3940260215261814922, guid: 8defe7bae9e12d54ca5030f78efce47b, type: 3}
@@ -13155,6 +13177,7 @@ MonoBehaviour:
   textoPensamientos: {fileID: 220426952}
   textoPistaDeMision: {fileID: 2073662159}
   textoPrompt: {fileID: 1430520530}
+  textoSubtitulos: {fileID: 0}
   panelInicial: {fileID: 1127187367}
   panelFadeTransicion: {fileID: 472737695}
   sliderCoraje: {fileID: 688815695}
@@ -13712,6 +13735,8 @@ MonoBehaviour:
   playerData: {fileID: 11400000, guid: 7ce5b9b121fc47940961976eba6a9c96, type: 2}
   proximaEscena: Acto2_EstacionRutina
   textoLiricaInicial: "Si fuera m\xE1s guapa y un poco m\xE1s lista... si fuera especial..."
+  playerController: {fileID: 1276127077}
+  mainCameraController: {fileID: 1451035405}
   pasosDeMision:
   - missionID: diarioLeido
     hintText: "Deber\xEDa recordar lo que pas\xF3 ayer... mi diario est\xE1 en el

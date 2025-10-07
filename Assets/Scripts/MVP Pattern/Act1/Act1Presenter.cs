@@ -9,6 +9,10 @@ public class Act1Presenter : GamePresenterBase
     [TextArea(3, 5)]
     public string textoLiricaInicial;
 
+    [Header("Componentes del Jugador")]
+    public PlayerController playerController;
+    public CameraController mainCameraController;
+
     [Header("Sistema de Misión Acto 1")]
     public List<MissionStep> pasosDeMision = new List<MissionStep>();
     public string misionFinalID;
@@ -25,12 +29,13 @@ public class Act1Presenter : GamePresenterBase
     protected override void Awake()
     {
         base.Awake(); // Llama al Awake() de GamePresenterBase (importante para el Singleton).
-        if (playerInput != null) playerInput.DeactivateInput(); // Lógica específica de esta escena.
     }
 
     protected override void Start()
     {
-        // No llamamos a base.Start() porque esta escena tiene una rutina de inicio especial.
+        playerController?.CongelarMovimiento(true);
+        mainCameraController?.PermitirRotacion(false);
+
         StartCoroutine(RutinaDeInicio());
 
         misionesCompletadas.Clear();
@@ -56,7 +61,9 @@ public class Act1Presenter : GamePresenterBase
             view.SecuenciaInicial(textoLiricaInicial, 2f, 2f, 1.5f);
             yield return new WaitForSeconds(2f + 2f + 1.5f);
         }
-        if (playerInput != null) playerInput.ActivateInput();
+        playerController?.CongelarMovimiento(false);
+        mainCameraController?.PermitirRotacion(true);
+
         if (view != null) view.ActualizarBarraCoraje(playerData.Coraje);
     }
 
@@ -159,15 +166,11 @@ public class Act1Presenter : GamePresenterBase
 
     public void Evento_LeerDiario()
     {
-        if (IsUIPanelOpen()) return;
+        isUIPanelOpen = true;
+        playerController?.CongelarMovimiento(true);
+        mainCameraController?.PermitirRotacion(false);
 
-        SetUIPanelOpen(true); // Usa el método de la clase base para gestionar el estado y el input.
-
-        if (SoundManager.Instance != null)
-        {
-            SoundManager.Instance.PlaySFX("OpenBook", 1f);
-        }
-
+        SoundManager.Instance?.PlaySFX("OpenBook", 1f);
         view.MostrarPanelDiario(true);
         CompletarMision("diarioLeido");
     }
@@ -175,15 +178,11 @@ public class Act1Presenter : GamePresenterBase
     public void Evento_CerrarDiario()
     {
         if (!IsUIPanelOpen()) return;
+        isUIPanelOpen = false;
+        playerController?.CongelarMovimiento(false);
+        mainCameraController?.PermitirRotacion(true);
 
-        SetUIPanelOpen(false); // Usa el método de la clase base.
-
-        // Añadimos un sonido para cerrar el diario para mayor feedback.
-        if (SoundManager.Instance != null)
-        {
-            SoundManager.Instance.PlaySFX("CloseBook", 1f);
-        }
-
+        SoundManager.Instance?.PlaySFX("CloseBook", 1f);
         view.MostrarPanelDiario(false);
     }
     public override bool TryCloseUIPanel()
