@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Acto2_EstacionRutina.unity
     guid: dced89502b5af9b4ba4ee3e0ed9b2558
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Acto4_EstacionEncuentro1.unity
     guid: 3fb932adc23fa3f47a8a2899338e6f8d
   - enabled: 1

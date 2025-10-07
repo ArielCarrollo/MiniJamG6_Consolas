@@ -11,6 +11,7 @@ public class UIView : MonoBehaviour
     public TextMeshProUGUI textoPensamientos;
     public TextMeshProUGUI textoPistaDeMision;
     public TextMeshProUGUI textoPrompt;
+    public TextMeshProUGUI textoSubtitulos;
 
     [Header("Paneles de Fundido")]
     public CanvasGroup panelInicial;
@@ -46,6 +47,10 @@ public class UIView : MonoBehaviour
             {
                 diarioCanvasGroup = panelDiario.AddComponent<CanvasGroup>();
             }
+        }
+        if (textoSubtitulos != null)
+        {
+            textoSubtitulos.alpha = 0;
         }
     }
 
@@ -93,6 +98,14 @@ public class UIView : MonoBehaviour
         textoPensamientos.alpha = opacidad;
         float duracion = texto.Length / velocidadDeEscritura;
         textoPensamientos.DOText(texto, duracion).SetEase(Ease.Linear);
+    }
+    public void OcultarPensamiento()
+    {
+        if (textoPensamientos == null) return;
+
+        // Detiene cualquier animación de texto anterior y lo desvanece.
+        textoPensamientos.DOKill();
+        textoPensamientos.DOFade(0, 0.3f); // Fundido de salida rápido (0.3 segundos)
     }
 
     public void MostrarPista(string texto)
@@ -194,7 +207,26 @@ public class UIView : MonoBehaviour
                 .OnComplete(() => panelDiario.SetActive(false));
         }
     }
+    /// <summary>
+    /// Muestra un subtítulo en pantalla con un efecto de fundido.
+    /// </summary>
+    public void MostrarSubtitulo(string texto)
+    {
+        if (textoSubtitulos == null) return;
+        textoSubtitulos.text = texto;
+        textoSubtitulos.DOKill();
+        textoSubtitulos.DOFade(1, 0.4f);
+    }
 
+    /// <summary>
+    /// Oculta el subtítulo actual con un efecto de fundido.
+    /// </summary>
+    public void OcultarSubtitulo()
+    {
+        if (textoSubtitulos == null) return;
+        textoSubtitulos.DOKill();
+        textoSubtitulos.DOFade(0, 0.4f);
+    }
 
     // --- SECUENCIA INICIAL (DOTWEEN) ---
 

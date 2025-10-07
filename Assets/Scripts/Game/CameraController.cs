@@ -1,25 +1,30 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // Necesario para PlayerInput
+using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
     [Header("Referencias")]
-    public PlayerInput playerInput; // NUEVO: Arrastra aquí el componente PlayerInput
+    public PlayerInput playerInput;
 
     [SerializeField] private float sensitivity = 200f;
     private Vector2 rotation;
     private Vector2 delta;
 
-    // El booleano 'isFrozen' ya no es necesario
+    // NUEVO: Flag para controlar la rotación.
+    private bool rotacionPermitida = true;
 
     private void OnEnable() => InputReader.OnDelta += MoveCamera;
     private void OnDisable() => InputReader.OnDelta -= MoveCamera;
 
     private void Update()
     {
-        // --- SOLUCIÓN AL MOVIMIENTO ---
-        // Si el PlayerInput está desactivado, no hacemos absolutamente nada.
         if (playerInput != null && !playerInput.actions.enabled)
+        {
+            return;
+        }
+
+        // NUEVO: Si la rotación no está permitida, salimos del método aquí.
+        if (!rotacionPermitida)
         {
             return;
         }
@@ -32,5 +37,11 @@ public class CameraController : MonoBehaviour
     private void MoveCamera(Vector2 value)
     {
         delta = value;
+    }
+
+    // NUEVO: Método público para que otros scripts puedan bloquear/desbloquear la rotación.
+    public void PermitirRotacion(bool permitido)
+    {
+        rotacionPermitida = permitido;
     }
 }

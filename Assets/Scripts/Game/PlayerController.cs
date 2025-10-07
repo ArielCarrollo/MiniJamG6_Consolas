@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [Header("Referencias")]
-    public PlayerInput playerInput; // NUEVO: Arrastra aquí el componente PlayerInput
+    public PlayerInput playerInput;
 
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
@@ -16,7 +16,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity;
     private Vector2 move;
 
-    // El booleano 'isFrozen' ya no es necesario
+    // NUEVO: Flag para controlar el movimiento lateral.
+    private bool movimientoLateralPermitido = true;
 
     private void OnEnable() => InputReader.OnMove += Move;
     private void OnDisable() => InputReader.OnMove -= Move;
@@ -29,13 +30,10 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // --- SOLUCIÓN AL MOVIMIENTO ---
-        // Si el PlayerInput está desactivado, no hacemos absolutamente nada.
         if (playerInput != null && !playerInput.actions.enabled)
         {
             return;
         }
-
         MovePlayer();
     }
 
@@ -46,10 +44,19 @@ public class PlayerController : MonoBehaviour
 
     private void MovePlayer()
     {
-        Vector3 direction = (mainCamera.right * move.x + mainCamera.forward * move.y).normalized;
+        // CORRECCIÓN: Usamos el flag para decidir si aplicar el movimiento en X.
+        float inputHorizontal = movimientoLateralPermitido ? move.x : 0f;
+
+        Vector3 direction = (mainCamera.right * inputHorizontal + mainCamera.forward * move.y).normalized;
         direction.y = 0;
         controller.Move(direction * moveSpeed * Time.deltaTime);
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    // NUEVO: Método público para que otros scripts puedan restringir el movimiento.
+    public void PermitirMovimientoLateral(bool permitido)
+    {
+        movimientoLateralPermitido = permitido;
     }
 }

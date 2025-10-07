@@ -11,6 +11,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource ambienceSource;
     [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource loopingSfxSource;
 
     [Header("Librería de Sonidos")]
     public List<Sound> sounds;
@@ -110,7 +111,29 @@ public class SoundManager : MonoBehaviour
         }
         sfxSource.PlayOneShot(s.clip, volume);
     }
+    public void PlayLoopingSFX(string name, float volume = 1.0f)
+    {
+        if (loopingSfxSource == null) return;
 
+        Sound s = sounds.FirstOrDefault(sound => sound.name == name);
+        if (s == null)
+        {
+            Debug.LogWarning($"Looping SFX: '{name}' no encontrado.");
+            return;
+        }
+
+        loopingSfxSource.clip = s.clip;
+        loopingSfxSource.volume = volume;
+        loopingSfxSource.loop = true;
+        loopingSfxSource.Play();
+    }
+    public void StopLoopingSFX()
+    {
+        if (loopingSfxSource == null) return;
+
+        loopingSfxSource.Stop();
+        loopingSfxSource.clip = null; // Limpiamos la referencia
+    }
     // Métodos opcionales para detener/cambiar pistas individualmente
     public void StopMusic(float fadeDuration = 1.0f)
     {

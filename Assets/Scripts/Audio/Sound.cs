@@ -5,5 +5,6 @@ using UnityEngine;
 public class Sound
 {
     public string name; // El nombre con el que llamaremos al sonido (ej: "ButtonClick", "Act1Music")
-    public AudioClip clip; // El archivo de audio
+    public AudioClip clip; // El archivo de audio    [Range(0f, 1f)]
+    public float volume = 0.8f;
 }
