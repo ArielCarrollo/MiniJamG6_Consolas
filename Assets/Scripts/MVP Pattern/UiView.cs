@@ -270,4 +270,18 @@ public class UIView : MonoBehaviour
         // Anima la opacidad del panel de 1 a 0.
         panelFadeTransicion.DOFade(0, duracion);
     }
+    public void SetColorDeTransicion(Color color)
+    {
+        if (panelFadeTransicion == null) return;
+
+        Image panelImage = panelFadeTransicion.GetComponent<Image>();
+        if (panelImage != null)
+        {
+            panelImage.color = color;
+        }
+        else
+        {
+            Debug.LogWarning("El panel de transición no tiene un componente 'Image' para cambiar de color.");
+        }
+    }
 }

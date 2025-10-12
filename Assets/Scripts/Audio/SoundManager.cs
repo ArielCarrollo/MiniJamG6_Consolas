@@ -134,6 +134,13 @@ public class SoundManager : MonoBehaviour
         loopingSfxSource.Stop();
         loopingSfxSource.clip = null; // Limpiamos la referencia
     }
+    public void SetLoopingSFXVolume(float volume)
+    {
+        if (loopingSfxSource != null)
+        {
+            loopingSfxSource.volume = volume;
+        }
+    }
     // Métodos opcionales para detener/cambiar pistas individualmente
     public void StopMusic(float fadeDuration = 1.0f)
     {
