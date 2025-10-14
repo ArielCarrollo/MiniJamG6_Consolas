@@ -119,7 +119,7 @@ public class Act4Presenter : GamePresenterBase
         camController?.IniciarZoomHaciaObjetivo(objetivoZoom, fovZoom, duracionZoom);
         yield return new WaitForSeconds(1.0f);
 
-        view?.MostrarPrompt("[E] Respirar Hondo");
+        view?.MostrarPrompt("[A] Respirar Hondo");
         escenaActiva = true;
     }
 

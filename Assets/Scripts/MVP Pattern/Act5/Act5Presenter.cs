@@ -11,7 +11,7 @@ public class Act5Presenter : GamePresenterBase
     [Header("Textos de la Escena")]
     public string textoLiricaInicial = "Y ya estamos llegando, mi vida ha cambiado.";
     public string textoTomaMano = "Me tomas la mano...";
-    public string textoPistaBusqueda = "Busca su rostro entre la oscuridad..."; // PISTA AÑADIDA
+    public string textoPistaBusqueda = "Busca su rostro entre la oscuridad...";
     public string textoBeso = "Me vuelvo valiente y te beso en los labios.";
     public string dialogoChico = "Siento como si te conociera de toda la vida.";
     public string pensamientoQuerer = "Dices que me quieres...";
@@ -27,6 +27,17 @@ public class Act5Presenter : GamePresenterBase
     [Header("Configuración de la Búsqueda")]
     public float tiempoParaEncontrar = 1.5f;
 
+    // --> INICIO: NUEVAS VARIABLES PARA VIBRACIÓN POR PROXIMIDAD DE MIRA
+    [Header("Configuración de Vibración por Proximidad de Mira")]
+    [Tooltip("El ángulo máximo para que la vibración comience. Si la mira está más lejos, no vibra.")]
+    public float maxAngleForVibration = 30f;
+    [Tooltip("El ángulo en el que la vibración es máxima. Recompensa la precisión.")]
+    public float minAngleForVibration = 2f;
+    [Tooltip("La intensidad máxima de la vibración (0 a 1).")]
+    [Range(0f, 1f)]
+    public float maxVibrationIntensity = 0.7f;
+    // --> FIN: NUEVAS VARIABLES
+
     [Header("Configuración de Feedback")]
     public string sfxTomaMano = "HandHold";
     public string sfxBeso = "SoftKiss";
@@ -35,6 +46,7 @@ public class Act5Presenter : GamePresenterBase
 
     private bool objetivoEncontrado = false;
     private Coroutine corrutinaDeEncontrar;
+    private Coroutine corrutinaDeVibracion; // --> NUEVO: Referencia a la corrutina de vibración
 
     protected override void Start()
     {
@@ -45,26 +57,22 @@ public class Act5Presenter : GamePresenterBase
 
     public override void OnGazeEnterInteractable(InteractableObject objeto)
     {
-        // Si el objeto que miramos es nuestra guía y aún no la hemos encontrado...
         if (objeto == guiaInteractable && !objetivoEncontrado)
         {
-            // ¡EL OBJETO BRILLA!
             objeto.shimmerEffect?.StartShimmer();
-            VibrationManager.Vibrate(0.2f, 0.2f, 0.1f); // Vibración suave al encontrarlo con la mirada
-            // Iniciamos la cuenta atrás para "encontrar" el objetivo.
+            // Esta vibración actuará como un "clic" de confirmación.
+            VibrationManager.Vibrate(0.2f, 0.2f, 0.1f);
             corrutinaDeEncontrar = StartCoroutine(RutinaEncontrarObjetivo());
         }
     }
 
     public override void OnGazeExitInteractable(InteractableObject objeto)
     {
-        // Si dejamos de mirar la guía...
         if (objeto == guiaInteractable)
         {
-            // ¡EL OBJETO DEJA DE BRILLAR!
             objeto.shimmerEffect?.StopShimmer();
-            VibrationManager.Vibrate(0, 0, 0); // Detenemos vibración
-            // Cancelamos la cuenta atrás.
+            // Detenemos la vibración del "clic", la corrutina de proximidad se reactivará sola.
+            VibrationManager.Vibrate(0, 0, 0);
             if (corrutinaDeEncontrar != null)
             {
                 StopCoroutine(corrutinaDeEncontrar);
@@ -75,7 +83,6 @@ public class Act5Presenter : GamePresenterBase
     private IEnumerator RutinaEncontrarObjetivo()
     {
         yield return new WaitForSeconds(tiempoParaEncontrar);
-        // Si hemos mantenido la mirada el tiempo suficiente, marcamos el objetivo como encontrado.
         objetivoEncontrado = true;
     }
 
@@ -99,16 +106,25 @@ public class Act5Presenter : GamePresenterBase
 
         // FASE 2: BÚSQUEDA
         mainCameraController?.PermitirRotacion(true);
-        MostrarPistaConSonido(textoPistaBusqueda); // MOSTRAMOS LA PISTA
+        MostrarPistaConSonido(textoPistaBusqueda);
 
-        // Esperamos hasta que la variable 'objetivoEncontrado' se vuelva 'true' gracias a los métodos OnGaze
+        // --> INICIO: Arrancamos la corrutina de vibración por proximidad.
+        corrutinaDeVibracion = StartCoroutine(RutinaVibracionPorProximidadDeMira());
+
+        // Esperamos hasta que la variable 'objetivoEncontrado' se vuelva 'true'
         yield return new WaitUntil(() => objetivoEncontrado);
+
+        // --> INICIO: Detenemos la corrutina de vibración para evitar conflictos.
+        if (corrutinaDeVibracion != null)
+        {
+            StopCoroutine(corrutinaDeVibracion);
+        }
 
         // Objetivo encontrado, detenemos todo
         mainCameraController?.PermitirRotacion(false);
         guiaInteractable.shimmerEffect?.StopShimmer();
         MostrarPistaConSonido(""); // Limpiamos la pista
-        VibrationManager.Vibrate(0, 0, 0);
+        VibrationManager.Vibrate(0, 0, 0); // Nos aseguramos de que toda vibración pare.
 
         // FASE 3: BESO Y DIÁLOGO
         view.MostrarPensamiento(textoBeso, 1f);
@@ -148,9 +164,44 @@ public class Act5Presenter : GamePresenterBase
         IniciarTransicionAEscena(escenaMenu);
     }
 
+    // --> INICIO: NUEVA CORRUTINA PARA LA VIBRACIÓN POR PROXIMIDAD DE MIRA
+    /// <summary>
+    /// Gestiona una vibración continua basada en qué tan cerca está la mira del objeto guía.
+    /// </summary>
+    private IEnumerator RutinaVibracionPorProximidadDeMira()
+    {
+        while (!objetivoEncontrado)
+        {
+            if (mainCameraController != null && guiaInteractable != null)
+            {
+                // Dirección en la que la cámara está mirando
+                Vector3 cameraForward = mainCameraController.transform.forward;
+                // Dirección desde la cámara hacia el objeto guía
+                Vector3 directionToTarget = (guiaInteractable.transform.position - mainCameraController.transform.position).normalized;
+
+                // Calculamos el ángulo entre las dos direcciones
+                float angle = Vector3.Angle(cameraForward, directionToTarget);
+
+                // Mapeamos el ángulo a una intensidad de 0 a 1.
+                // Si el ángulo es maxAngleForVibration o más, la intensidad es 0.
+                // Si el ángulo es minAngleForVibration o menos, la intensidad es 1.
+                float intensity = Mathf.InverseLerp(maxAngleForVibration, minAngleForVibration, angle);
+
+                // Aplicamos la intensidad máxima configurable
+                float finalIntensity = intensity * maxVibrationIntensity;
+
+                // Hacemos vibrar el mando con la intensidad calculada
+                VibrationManager.Vibrate(finalIntensity, finalIntensity, Time.deltaTime);
+            }
+
+            // Esperamos al siguiente frame para volver a calcular
+            yield return null;
+        }
+    }
+    // --> FIN: NUEVA CORRUTINA
+
     private IEnumerator RutinaSoploFinal()
     {
-        // CORREGIDO: Usamos 'playerInput' de la clase base, no 'playerInputRef'.
         var interactAction = playerInput.actions["Interact"];
         if (!interactAction.IsPressed()) yield break;
 

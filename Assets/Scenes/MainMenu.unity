@@ -13520,7 +13520,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: "1. Habitaci\xF3n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bdb4b247b7dad58498e1ffe1e369039f, type: 2}
   m_sharedMaterial: {fileID: -7346049701371081822, guid: bdb4b247b7dad58498e1ffe1e369039f, type: 2}

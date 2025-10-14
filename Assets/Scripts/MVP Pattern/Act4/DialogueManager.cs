@@ -53,7 +53,7 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator RutinaDeDialogo()
     {
         // 1. Prompt inicial
-        view?.MostrarPrompt("[E] Pronunciar su nombre");
+        view?.MostrarPrompt("[A] Pronunciar su nombre");
         yield return EsperarInput();
 
         // 2. El Tartamudeo y el Pánico
@@ -77,7 +77,7 @@ public class DialogueManager : MonoBehaviour
         for (int i = 0; i < lineasDialogoChico.Length; i++)
         {
             view?.MostrarSubtitulo(lineasDialogoChico[i]);
-            view?.MostrarPrompt("[E] Escuchar");
+            view?.MostrarPrompt("[A] Escuchar");
             yield return EsperarInput();
             view?.OcultarPrompt();
             view?.OcultarSubtitulo();

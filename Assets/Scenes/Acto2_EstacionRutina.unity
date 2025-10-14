@@ -5536,6 +5536,7 @@ MonoBehaviour:
   textoPensamientos: {fileID: 869656683}
   textoPistaDeMision: {fileID: 218876575}
   textoPrompt: {fileID: 1438881602}
+  textoSubtitulos: {fileID: 0}
   panelInicial: {fileID: 1509745543}
   panelFadeTransicion: {fileID: 304695073}
   sliderCoraje: {fileID: 1098972821}
@@ -11326,8 +11327,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.3055334, y: 3.411925, z: 49.328274}
-  m_Center: {x: 0.08294916, y: 1.2059628, z: 12.712065}
+  m_Size: {x: 2.791422, y: 3.411925, z: 49.328274}
+  m_Center: {x: 0.3258934, y: 1.2059628, z: 12.712065}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
